@@ -2,16 +2,10 @@
 
 #
 # Efficiently find duplicated files in multiple directory hierarchies.
-# Copyright 2007-2008 S. Fuhrmann <s_fuhrm@web.de>
-# $Id: dupfind.sh 9 2008-01-19 22:32:56Z fury $
+# Copyright 2007-2016 S. Fuhrmann <s_fuhrm@web.de>
 
-# sort -r : reverse order
-
-#trap 'pkill -P $$' 2
 trap : 2 3 15
 
-
-STRATEGY="RM"
 AWKSCRIPT=/tmp/awk.$$
 
 cat > $AWKSCRIPT <<FOOBAR
