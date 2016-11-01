@@ -171,7 +171,7 @@ fi
 
 if [ "$SELECTIONSTRATEGY" = "LONGESTPATH" ]; then
 #
-# SHORTESTPATH selection script 
+# LONGESTPATH selection script 
 #
 cat > $AWKSELECT <<FOOBAZ
 BEGIN { 
