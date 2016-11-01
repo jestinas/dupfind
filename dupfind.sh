@@ -4,53 +4,217 @@
 # Efficiently find duplicated files in multiple directory hierarchies.
 # Copyright 2007-2016 S. Fuhrmann <s_fuhrm@web.de>
 
+DEBUG=0
+REMOVALSTRATEGY="RM"
+SELECTIONSTRATEGY="SHORTESTPATH"
+while getopts "hds:r:" opt; do
+  case $opt in
+    h)
+      echo "dupfind.sh (C) 2007-2016 S.Fuhrmann <s_fuhrm@web.de>" >&2
+      echo "" >&2
+      echo "-h...This command line help" >&2
+      echo "-d...Debug the script (only for development)" >&2
+      echo "-r...Removal strategy: One of RM (default), LNS or LN" >&2
+      echo "-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH" >&2
+      exit
+      ;;
+    d)
+	DEBUG=1
+	;;
+    r)
+	REMOVALSTRATEGY=${OPTARG}
+	;;
+    s)
+	SELECTIONSTRATEGY=${OPTARG}
+	case $SELECTIONSTRATEGY in
+		FIRST | SHORTESTPATH | LONGESTPATH)
+			;;
+		*)
+			echo "Unknown selection strategy ${OPTARG}"
+			exit
+			;;
+	esac
+	;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
 trap : 2 3 15
 
-AWKSCRIPT=/tmp/awk.$$
+TMPGROUP=/tmp/group.$$
+AWKCOMPARE=/tmp/awk.compare.$$
+AWKSELECT=/tmp/awk.select.$$
 
-cat > $AWKSCRIPT <<FOOBAR
+#
+# This is the basic duplicate grouping script
+#
+cat > $AWKCOMPARE <<FOOBAR
+function checksum(path) {
+	"sha1sum -b \""path"\"" |& getline val
+	count=split(val, a, " ")
+	return a[1]
+}
+function addsum(sum,path,group) {
+	group[sum][path]=1
+}
+function flushgroup(group) {
+	for (sum in group) {
+		first = 1
+		len=0
+		# count array elements 
+		for (file in group[sum]) {
+			len++
+		}
+		# only elements with 2 entries
+		if (len < 2) {
+			continue
+		}
+		for (file in group[sum]) {
+			sep = first==1 ? "" : "\t";
+			printf("%s\"%s\"",sep,file);
+			first = 0
+		}
+		printf("\n");
+	}
+}
 BEGIN { 
 	FS = "\t"; 
-	count=0; 
-	dupes=0; 
 	oldpath=""; 
 	oldname=""; 
 	oldsize=""; 
-	totalsize=0; 
-	totaldupsize=0;
-} 
-{ 
+	ingroup=0;
+	group_pos=0
+	delete group
+}
+{
 	path=\$1; 
 	name=\$2; 
 	size=\$3; 
 	count++; 
 	totalsize+=size; 
-	if ( size == oldsize && size>0 && path != oldpath ) {
-		val=system("cmp -s \""path"\" \""oldpath"\""); 
-		if (val==0) { 
-			print "# Because of \""oldpath"\""; 
-			if (name!=oldname) {
-				print "# Note the different name!" 
-			} 
-			print "rm \""path"\""
-			dupes++; 
-			totaldupsize+=size; 
+	if ( size == oldsize && size>0 ) {
+		if (!ingroup) {
+			oldsum=checksum(oldpath)
+			addsum(oldsum,oldpath,group)
 		}
+		sum=checksum(path)
+		addsum(sum,path,group)
+		ingroup=1
+	} else {
+		ingroup=0
+		flushgroup(group)
+		delete group
 	}
 	oldpath=path; 
 	oldname=name; oldsize=size
 }; 
 END { 
-	print "# Total files: "count", total size: "totalsize"="totalsize/(1024*1024)"MB, duplicates: "dupes", duplicates size: "totaldupsize"="totaldupsize/(1024*1024)"MB"
+	flushgroup(group)
+	delete group
 }
 FOOBAR
 
+if [ "$SELECTIONSTRATEGY" = "FIRST" ]; then
+#
+# FIRST selection script 
+#
+cat > $AWKSELECT <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+	count=0; 
+} 
+{
+	if (NF >= 2) {
+		print
+	}
+}; 
+END { 
+}
+FOOBAZ
+fi
+
+if [ "$SELECTIONSTRATEGY" = "SHORTESTPATH" ]; then
+#
+# SHORTESTPATH selection script 
+#
+cat > $AWKSELECT <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+	count=0; 
+} 
+{
+	MIN=-1
+	MINELEMENT=0
+	for(i = 1; i <= NF; i++) {
+		if (MIN == -1 || length(\$i) < MIN) {
+			MIN=length(\$i)
+			MINELEMENT=\$i
+		}
+	}
+	if (NF >= 2) {
+		printf("%s", MINELEMENT);
+		for(i = 1; i <= NF; i++) {
+			if (\$i != MINELEMENT) {
+				printf("\t%s", \$i);
+			}
+		}
+		printf("\n");
+	}
+}; 
+END { 
+}
+FOOBAZ
+fi
+
+if [ "$SELECTIONSTRATEGY" = "LONGESTPATH" ]; then
+#
+# SHORTESTPATH selection script 
+#
+cat > $AWKSELECT <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+	count=0; 
+} 
+{
+	MAX=-1
+	MAXELEMENT=0
+	for(i = 1; i <= NF; i++) {
+		if (MAX == -1 || length(\$i) > MAX) {
+			MAX=length(\$i)
+			MAXELEMENT=\$i
+		}
+	}
+	if (NF >= 2) {
+		printf("%s", MAXELEMENT);
+		for(i = 1; i <= NF; i++) {
+			if (\$i != MAXELEMENT) {
+				printf("\t%s", \$i);
+			}
+		}
+		printf("\n");
+	}
+}; 
+END { 
+}
+FOOBAZ
+fi
 (
+	# format for pipe infos is: 
 	find -H "$@" -type f -printf "%s\t%f\t%p\n" |
-	sort -r |
+	# Line format: bytesize\tfilename\tfullpath
+	# Sort in reverse order
+	sort -r -n |
+	# Sort in reverse order
 	awk -- '{FS = "\t"; print $3"\t"$2"\t"$1 }'|
-	uniq -d -D -f 1|
-	awk -f $AWKSCRIPT
+	# Line format: fullpath\tfilename\tbytesize
+	gawk -- 'BEGIN{FS="\t"; old=""}; {if (oldkey == $3) {if (old) {print old} print $0; old=0} else {old=$0}; oldkey=$3 };' |
+	gawk -f $AWKCOMPARE |
+	# Line format: dup1\tdup2\tdup3...
+	awk -f $AWKSELECT
+	
 ) &
 CHILD_PID=$!
 
@@ -59,4 +223,8 @@ wait $CHILD_PID
 if [[ $? -gt 128 ]]
 then
     pkill -P $CHILD_PID
+fi
+
+if [ "$DEBUG" == "0" ]; then
+	rm -f $AWKCOMPARE
 fi
