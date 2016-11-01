@@ -23,7 +23,15 @@ while getopts "hds:r:" opt; do
 	;;
     r)
 	REMOVALSTRATEGY=${OPTARG}
-	;;
+	case $REMOVALSTRATEGY in
+		RM | LNS | LN)
+			;;
+		*)
+			echo "Unknown removal strategy ${OPTARG}"
+			exit
+			;;
+	esac
+	;;	;;
     s)
 	SELECTIONSTRATEGY=${OPTARG}
 	case $SELECTIONSTRATEGY in
