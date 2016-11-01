@@ -14,7 +14,7 @@ while getopts "hds:r:" opt; do
       echo "" >&2
       echo "-h...This command line help" >&2
       echo "-d...Debug the script (only for development)" >&2
-      echo "-r...Removal strategy: One of RM (default), LNS or LN" >&2
+      echo "-r...Removal strategy: One of RM (default), LNS, LN or NOP" >&2
       echo "-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH" >&2
       exit
       ;;
@@ -24,7 +24,7 @@ while getopts "hds:r:" opt; do
     r)
 	REMOVALSTRATEGY=${OPTARG}
 	case $REMOVALSTRATEGY in
-		RM | LNS | LN)
+		RM | LNS | LN | NOP)
 			;;
 		*)
 			echo "Unknown removal strategy ${OPTARG}"
@@ -270,6 +270,16 @@ BEGIN {
 }; 
 END { 
 }
+FOOBAZ
+fi
+
+if [ "$REMOVALSTRATEGY" = "NOP" ]; then
+#
+# NOP removal script 
+#
+cat > $AWKREMOVE <<FOOBAZ
+{
+};
 FOOBAZ
 fi
 
