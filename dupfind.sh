@@ -31,7 +31,7 @@ while getopts "hds:r:" opt; do
 			exit
 			;;
 	esac
-	;;	;;
+	;;
     s)
 	SELECTIONSTRATEGY=${OPTARG}
 	case $SELECTIONSTRATEGY in
@@ -230,6 +230,47 @@ END {
 FOOBAZ
 fi
 
+if [ "$REMOVALSTRATEGY" = "LNS" ]; then
+#
+# LNS removal script 
+#
+cat > $AWKREMOVE <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+} 
+{
+	MAX=-1
+	MAXELEMENT=0
+	printf ("# Keeping %s\n", \$1)
+	for(i = 2; i <= NF; i++) {
+		printf ("ln -sf %s %s\n", \$1, \$i)
+	}
+}; 
+END { 
+}
+FOOBAZ
+fi
+
+if [ "$REMOVALSTRATEGY" = "LN" ]; then
+#
+# LN removal script 
+#
+cat > $AWKREMOVE <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+} 
+{
+	MAX=-1
+	MAXELEMENT=0
+	printf ("# Keeping %s\n", \$1)
+	for(i = 2; i <= NF; i++) {
+		printf ("ln -f %s %s\n", \$1, \$i)
+	}
+}; 
+END { 
+}
+FOOBAZ
+fi
 
 # this is the main subprocess
 (
