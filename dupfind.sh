@@ -39,9 +39,9 @@ BEGIN {
 				print "# Note the different name!" 
 			} 
 			print "rm \""path"\""
-		}; 
-		dupes++; 
-		totaldupsize+=size; 
+			dupes++; 
+			totaldupsize+=size; 
+		}
 	}
 	oldpath=path; 
 	oldname=name; oldsize=size
