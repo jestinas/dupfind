@@ -56,6 +56,7 @@ TMPGROUP=/tmp/group.$$
 AWKCOMPARE=/tmp/awk.compare.$$
 AWKSELECT=/tmp/awk.select.$$
 AWKREMOVE=/tmp/awk.remove.$$
+AWKSTATS=/tmp/awk.stats.$$
 
 #
 # This is the basic duplicate grouping script
@@ -272,6 +273,28 @@ END {
 FOOBAZ
 fi
 
+#
+# Statistics script
+#
+cat > $AWKSTATS <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+	DUPSIZE=0
+	DUPCOUNT=0
+} 
+{
+	"stat --printf=\"%s\" "\$1 |& getline SIZE
+	for(i = 2; i <= NF; i++) {
+		DUPCOUNT++;
+		DUPSIZE+=SIZE;
+	}
+	print
+}; 
+END { 
+	print("# Stats: duplicates="DUPCOUNT", dupsize="DUPSIZE/(1024*1024)"MB") > "/dev/stderr"
+}
+FOOBAZ
+
 # this is the main subprocess
 (
 	# format for pipe infos is: 
@@ -286,6 +309,7 @@ fi
 	gawk -f $AWKCOMPARE |
 	# Line format: dup1\tdup2\tdup3...
 	awk -f $AWKSELECT | 
+	awk -f $AWKSTATS | 
 	awk -f $AWKREMOVE 
 ) &
 CHILD_PID=$!
@@ -301,4 +325,5 @@ if [ "$DEBUG" == "0" ]; then
 	rm -f $AWKCOMPARE
 	rm -f $AWKSELECT
 	rm -f $AWKREMOVE
+	rm -f $AWKSTATS
 fi
