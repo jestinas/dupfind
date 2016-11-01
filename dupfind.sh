@@ -47,6 +47,7 @@ trap : 2 3 15
 TMPGROUP=/tmp/group.$$
 AWKCOMPARE=/tmp/awk.compare.$$
 AWKSELECT=/tmp/awk.select.$$
+AWKREMOVE=/tmp/awk.remove.$$
 
 #
 # This is the basic duplicate grouping script
@@ -201,6 +202,32 @@ END {
 }
 FOOBAZ
 fi
+
+
+if [ "$REMOVALSTRATEGY" = "RM" ]; then
+#
+# RM removal script 
+#
+cat > $AWKREMOVE <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+	count=0; 
+} 
+{
+	MAX=-1
+	MAXELEMENT=0
+	printf ("# Keeping %s\n", \$1)
+	for(i = 2; i <= NF; i++) {
+		printf ("rm %s\n", \$i)
+	}
+}; 
+END { 
+}
+FOOBAZ
+fi
+
+
+# this is the main subprocess
 (
 	# format for pipe infos is: 
 	find -H "$@" -type f -printf "%s\t%f\t%p\n" |
@@ -213,8 +240,8 @@ fi
 	gawk -- 'BEGIN{FS="\t"; old=""}; {if (oldkey == $3) {if (old) {print old} print $0; old=0} else {old=$0}; oldkey=$3 };' |
 	gawk -f $AWKCOMPARE |
 	# Line format: dup1\tdup2\tdup3...
-	awk -f $AWKSELECT
-	
+	awk -f $AWKSELECT | 
+	awk -f $AWKREMOVE 
 ) &
 CHILD_PID=$!
 
