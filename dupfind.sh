@@ -125,7 +125,6 @@ if [ "$SELECTIONSTRATEGY" = "FIRST" ]; then
 cat > $AWKSELECT <<FOOBAZ
 BEGIN { 
 	FS = "\t"; 
-	count=0; 
 } 
 {
 	if (NF >= 2) {
@@ -144,7 +143,6 @@ if [ "$SELECTIONSTRATEGY" = "SHORTESTPATH" ]; then
 cat > $AWKSELECT <<FOOBAZ
 BEGIN { 
 	FS = "\t"; 
-	count=0; 
 } 
 {
 	MIN=-1
@@ -177,7 +175,6 @@ if [ "$SELECTIONSTRATEGY" = "LONGESTPATH" ]; then
 cat > $AWKSELECT <<FOOBAZ
 BEGIN { 
 	FS = "\t"; 
-	count=0; 
 } 
 {
 	MAX=-1
@@ -211,7 +208,6 @@ if [ "$REMOVALSTRATEGY" = "RM" ]; then
 cat > $AWKREMOVE <<FOOBAZ
 BEGIN { 
 	FS = "\t"; 
-	count=0; 
 } 
 {
 	MAX=-1
