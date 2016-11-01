@@ -250,4 +250,6 @@ fi
 
 if [ "$DEBUG" == "0" ]; then
 	rm -f $AWKCOMPARE
+	rm -f $AWKSELECT
+	rm -f $AWKREMOVE
 fi
