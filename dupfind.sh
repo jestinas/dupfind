@@ -7,7 +7,10 @@
 DEBUG=0
 REMOVALSTRATEGY="RM"
 SELECTIONSTRATEGY="SHORTESTPATH"
-while getopts "hds:r:" opt; do
+UNSAFE=0
+DIGEST=sha1sum
+
+while getopts "hds:r:U" opt; do
   case $opt in
     h)
 cat >&2 <<FOOBAR
@@ -17,11 +20,15 @@ dupfind.sh (C) 2007-2016 S.Fuhrmann <s_fuhrm@web.de>
 	-d...Debug the script (only for development)
 	-r...Removal strategy: One of RM (default), LNS, LN or NOP
 	-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH
+	-U...Unsafe comparison, but faster operation (only SHA1 message digest comparison)
 FOOBAR
 	exit
       ;;
     d)
 	DEBUG=1
+	;;
+    U)
+	UNSAFE=1
 	;;
     r)
 	REMOVALSTRATEGY=${OPTARG}
@@ -66,7 +73,7 @@ AWKSAFE=/tmp/awk.safe.$$
 #
 cat > $AWKCOMPARE <<FOOBAR
 function checksum(path) {
-	"sha1sum -b \""path"\"" |& getline val
+	"$DIGEST -b \""path"\"" |& getline val
 	count=split(val, a, " ")
 	return a[1]
 }
@@ -278,6 +285,15 @@ cat > $AWKREMOVE <<FOOBAZ
 FOOBAZ
 fi
 
+if [ "$UNSAFE" = "1" ]; then
+#
+# NOP safe script 
+#
+cat > $AWKSAFE <<FOOBAZ
+{
+};
+FOOBAZ
+else
 #
 # Safe compare script
 # It is very unlikely that CMP(F1, F2) differs and SHA1(F1, F2) is the same.
@@ -302,6 +318,7 @@ BEGIN {
 END {
 }
 FOOBAZ
+fi
 
 #
 # Statistics script
