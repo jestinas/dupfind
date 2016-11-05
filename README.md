@@ -67,3 +67,6 @@ The script could work with Cygwin, but it's not tested.
 
 The software is under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
+## Author
+
+The scripts were written by Stephan Fuhrmann ( s_fuhrm AT gmx.de )
