@@ -8,7 +8,7 @@ The tool uses multiple filters on the input file list:
 
 * First the files are grouped by their file length.
 * Then the files are grouped by their SHA1/MD5 checksum.
-* After that, only same files are let thru.
+* After that, only same files that equal in their bytes are let thru.
 * In the end, a shell command to delete the superfluous files is print out.
 
 Dupfind will not delete a file itself. It will give you an executable shell script to
