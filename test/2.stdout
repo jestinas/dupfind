@@ -1,0 +1,7 @@
+# Keeping "test/2/e"
+rm "test/2/f"
+rm "test/2/g"
+# Keeping "test/2/c"
+rm "test/2/d"
+rm "test/2/a"
+rm "test/2/b"
