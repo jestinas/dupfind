@@ -32,8 +32,8 @@ The built-in strategies will return the following results:
 The removal strategy defines the line to be printed when a file is found to be
 a duplicate and to be removed.
 * RM: Output a "rm -f" command.
-* LN: Output a "ln -f" command for creating a hard link. Only works with Unix filesystems.
-* LNS: Output a "ln -sf" command for creating a symbolic link. Only works on Unix filesystems.
+* LN: Output a "ln -f" command for creating a hard link from the file to keep to the file to delete. Only works with Unix filesystems.
+* LNS: Output a "ln -sf" command for creating a symbolic link from the file to keep to the file to delete. Only works on Unix filesystems.
 
 ## Command line options
 
