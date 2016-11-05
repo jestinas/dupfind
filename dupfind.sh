@@ -57,6 +57,7 @@ AWKCOMPARE=/tmp/awk.compare.$$
 AWKSELECT=/tmp/awk.select.$$
 AWKREMOVE=/tmp/awk.remove.$$
 AWKSTATS=/tmp/awk.stats.$$
+AWKSAFE=/tmp/awk.safe.$$
 
 #
 # This is the basic duplicate grouping script
@@ -276,6 +277,30 @@ FOOBAZ
 fi
 
 #
+# Safe compare script
+#
+cat > $AWKSAFE <<FOOBAZ
+BEGIN { 
+	FS = "\t"; 
+} 
+{
+	MATCH=1
+	for(i = 2; i <= NF; i++) {
+		val=system("cmp -s "\$1" "\$i);
+		if (val!=0) {
+			print("# Sorting out again, SHA1 match but CMP mismatch: "\$1" "\$i) > "/dev/stderr"
+			MATCH=0
+		}
+	}
+	if (MATCH) {
+		print
+	}
+}; 
+END {
+}
+FOOBAZ
+
+#
 # Statistics script
 #
 cat > $AWKSTATS <<FOOBAZ
@@ -320,6 +345,7 @@ FOOBAZ
 	gawk -f $AWKCOMPARE |
 	# Line format: dup1\tdup2\tdup3...
 	awk -f $AWKSELECT | 
+	awk -f $AWKSAFE | 
 	awk -f $AWKSTATS | 
 	awk -f $AWKREMOVE 
 ) &
