@@ -260,7 +260,7 @@ BEGIN {
 	MAXELEMENT=0
 	printf ("# Keeping %s\n", \$1)
 	for(i = 2; i <= NF; i++) {
-		printf ("rm %s\n", \$i)
+		printf ("rm -f %s\n", \$i)
 	}
 }; 
 FOOBAZ
