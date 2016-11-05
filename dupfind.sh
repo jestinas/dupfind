@@ -300,8 +300,17 @@ BEGIN {
 	}
 	print
 }; 
-END { 
-	print("# Stats: duplicates="DUPCOUNT", dupsize="DUPSIZE/(1024*1024)"MB") > "/dev/stderr"
+END {
+	UNIT="B"
+	DIV=1
+	if (DUPSIZE > 1024*1024) {
+		UNIT="MB"
+		DIV=1024*1024
+	} else if (DUPSIZE > 1024) {
+		UNIT="KB"
+		DIV=1024
+	}
+	print("# Stats: duplicates="DUPCOUNT", dupsize="DUPSIZE/DIV""UNIT) > "/dev/stderr"
 }
 FOOBAZ
 
