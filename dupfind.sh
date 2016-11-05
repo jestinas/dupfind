@@ -172,8 +172,6 @@ BEGIN {
 		printf("\n");
 	}
 }; 
-END { 
-}
 FOOBAZ
 fi
 
@@ -204,8 +202,6 @@ BEGIN {
 		printf("\n");
 	}
 }; 
-END { 
-}
 FOOBAZ
 fi
 
@@ -226,8 +222,6 @@ BEGIN {
 		printf ("rm %s\n", \$i)
 	}
 }; 
-END { 
-}
 FOOBAZ
 fi
 
@@ -247,8 +241,6 @@ BEGIN {
 		printf ("ln -sf %s %s\n", \$1, \$i)
 	}
 }; 
-END { 
-}
 FOOBAZ
 fi
 
