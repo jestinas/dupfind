@@ -280,7 +280,7 @@ BEGIN {
 	MAXELEMENT=0
 	printf ("# Keeping %s\n", \$1)
 	for(i = 2; i <= NF; i++) {
-		printf ("ln -sf %s %s\n", \$1, \$i)
+		printf ("ln -srf %s %s\n", \$1, \$i)
 	}
 }; 
 FOOBAZ
