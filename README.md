@@ -71,6 +71,11 @@ A short example run can be seen in the following text snippet:
 As you can see, there are two groups of files to be found same (a-d, e-g) and
 a deletion script is printed.
 
+## Performance
+
+The tool can work thru 1,2 TB of real life data in about 34 minutes which is quite impressive in
+my opinion. 
+
 ## Requirements
 
 Requires the following Linux binaries that are normally installed in every installation:
