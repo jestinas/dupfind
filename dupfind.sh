@@ -112,6 +112,7 @@ function flushgroup(group) {
 		if (len < 2) {
 			continue
 		}
+		duplicates+=len-1
 		for (file in group[sum]) {
 			sep = first==1 ? "" : "\t";
 			printf("%s\"%s\"",sep,file);
@@ -122,7 +123,7 @@ function flushgroup(group) {
 }
 function printverbose(idx, size, path,start_time) {
 	elapsed=systime()-start_time
-	str=sprintf("count=%d, class=%d, file=%s (%g/s)", idx, size, path, elapsed/idx)
+	str=sprintf("count=%d, class=%d, duplicates=%d, file=%s (%g/s)", idx, size, duplicates, path, elapsed/idx)
 	printf("\r"str"%*s", length(str)-oldlen, "") > "/dev/stderr"
 	fflush()
 	oldlen=length(str)
