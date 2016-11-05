@@ -29,7 +29,7 @@ deleted.
 
 ## Requirements
 
-Requires the following Linux binaries:
+Requires the following Linux binaries that are normally installed in every installation:
 * bash
 * awk
 * cmp
