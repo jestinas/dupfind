@@ -10,13 +10,15 @@ SELECTIONSTRATEGY="SHORTESTPATH"
 while getopts "hds:r:" opt; do
   case $opt in
     h)
-      echo "dupfind.sh (C) 2007-2016 S.Fuhrmann <s_fuhrm@web.de>" >&2
-      echo "" >&2
-      echo "-h...This command line help" >&2
-      echo "-d...Debug the script (only for development)" >&2
-      echo "-r...Removal strategy: One of RM (default), LNS, LN or NOP" >&2
-      echo "-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH" >&2
-      exit
+cat >&2 <<FOOBAR
+dupfind.sh (C) 2007-2016 S.Fuhrmann <s_fuhrm@web.de>
+
+	-h...This command line help
+	-d...Debug the script (only for development)
+	-r...Removal strategy: One of RM (default), LNS, LN or NOP
+	-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH
+FOOBAR
+	exit
       ;;
     d)
 	DEBUG=1
