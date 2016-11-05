@@ -5,18 +5,20 @@
 # Copyright 2007-2016 S. Fuhrmann <s_fuhrm@web.de>
 
 DEBUG=0
+VERBOSE=0
 REMOVALSTRATEGY="RM"
 SELECTIONSTRATEGY="SHORTESTPATH"
 UNSAFE=0
 DIGEST=sha1sum
 
-while getopts "hds:r:U" opt; do
+while getopts "vhds:r:U" opt; do
   case $opt in
     h)
 cat >&2 <<FOOBAR
 dupfind.sh (C) 2007-2016 S.Fuhrmann <s_fuhrm@web.de>
 
 	-h...This command line help
+	-v...Verbose progress output
 	-d...Debug the script (only for development)
 	-r...Removal strategy: One of RM (default), LNS, LN or NOP
 	-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH
@@ -26,6 +28,9 @@ FOOBAR
       ;;
     d)
 	DEBUG=1
+	;;
+    v)
+	VERBOSE=1
 	;;
     U)
 	UNSAFE=1
@@ -100,11 +105,18 @@ function flushgroup(group) {
 		printf("\n");
 	}
 }
+function printverbose(idx, size, path) {
+	str=sprintf("\rcount=%d, class=%d, file=%s", idx, size, path)
+	printf(str"%*s", length(str)-oldlen, "") > "/dev/stderr"
+	fflush()
+	oldlen=length(str)
+}
 BEGIN { 
 	FS = "\t"; 
 	oldpath=""; 
 	oldname=""; 
 	oldsize=""; 
+	idx=0;
 	ingroup=0;
 	group_pos=0
 	delete group
@@ -113,8 +125,12 @@ BEGIN {
 	path=\$1; 
 	name=\$2; 
 	size=\$3; 
-	count++; 
-	totalsize+=size; 
+	idx++; 
+	totalsize+=size;
+	
+	if ($VERBOSE==1) {
+		printverbose(idx,size,path)
+	}
 	if ( size == oldsize && size>0 ) {
 		if (!ingroup) {
 			oldsum=checksum(oldpath)
