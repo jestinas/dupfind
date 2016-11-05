@@ -278,6 +278,7 @@ fi
 
 #
 # Safe compare script
+# It is very unlikely that CMP(F1, F2) differs and SHA1(F1, F2) is the same.
 #
 cat > $AWKSAFE <<FOOBAZ
 BEGIN { 
