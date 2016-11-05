@@ -364,4 +364,5 @@ if [ "$DEBUG" == "0" ]; then
 	rm -f $AWKSELECT
 	rm -f $AWKREMOVE
 	rm -f $AWKSTATS
+	rm -f $AWKSAFE
 fi
