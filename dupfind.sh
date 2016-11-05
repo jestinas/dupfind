@@ -150,8 +150,6 @@ BEGIN {
 		print
 	}
 }; 
-END { 
-}
 FOOBAZ
 fi
 
@@ -270,8 +268,6 @@ BEGIN {
 		printf ("ln -f %s %s\n", \$1, \$i)
 	}
 }; 
-END { 
-}
 FOOBAZ
 fi
 
@@ -315,8 +311,6 @@ BEGIN {
 		print
 	}
 }; 
-END {
-}
 FOOBAZ
 fi
 
