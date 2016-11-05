@@ -9,7 +9,8 @@ VERBOSE=0
 REMOVALSTRATEGY="RM"
 SELECTIONSTRATEGY="SHORTESTPATH"
 UNSAFE=0
-DIGEST=sha1sum
+#DIGEST=sha1sum
+DIGEST=md5sum
 
 while getopts "vhds:r:U" opt; do
   case $opt in
@@ -105,8 +106,9 @@ function flushgroup(group) {
 		printf("\n");
 	}
 }
-function printverbose(idx, size, path) {
-	str=sprintf("\rcount=%d, class=%d, file=%s", idx, size, path)
+function printverbose(idx, size, path,start_time) {
+	elapsed=systime()-start_time
+	str=sprintf("\rcount=%d, class=%d, file=%s (%g/s)", idx, size, path, elapsed/idx)
 	printf(str"%*s", length(str)-oldlen, "") > "/dev/stderr"
 	fflush()
 	oldlen=length(str)
@@ -119,6 +121,7 @@ BEGIN {
 	idx=0;
 	ingroup=0;
 	group_pos=0
+	start_time=systime()
 	delete group
 }
 {
@@ -129,7 +132,7 @@ BEGIN {
 	totalsize+=size;
 	
 	if ($VERBOSE==1) {
-		printverbose(idx,size,path)
+		printverbose(idx,size,path,start_time)
 	}
 	if ( size == oldsize && size>0 ) {
 		if (!ingroup) {
