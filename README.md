@@ -51,6 +51,23 @@ The command line options are as follows:
 
 The other arguments passed to the command line are treated as directories to scan.
 
+## Example run
+
+A short example run can be seen in the following text snippet:
+
+    $ ./dupfind.sh /tmp/4
+    # Stats: duplicates=5, dupsize=10B
+    # Keeping "/tmp/4/a"
+    rm -f "/tmp/4/b"
+    rm -f "/tmp/4/c"
+    rm -f "/tmp/4/d"
+    # Keeping "/tmp/4/e"
+    rm -f "/tmp/4/f"
+    rm -f "/tmp/4/g"
+
+As you can see, there are two groups of files to be found same (a-d, e-g) and
+a deletion script is printed.
+
 ## Requirements
 
 Requires the following Linux binaries that are normally installed in every installation:
