@@ -23,7 +23,7 @@ dupfind.sh (C) 2007-2016 S.Fuhrmann <s_fuhrm@web.de>
 	-d...Debug the script (only for development)
 	-r...Removal strategy: One of RM (default), LNS, LN or NOP
 	-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH
-	-U...Unsafe comparison, but faster operation (only SHA1 message digest comparison)
+	-U...Unsafe comparison, but faster operation (only $DIGEST message digest comparison)
 FOOBAR
 	exit
       ;;
