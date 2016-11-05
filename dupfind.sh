@@ -108,8 +108,8 @@ function flushgroup(group) {
 }
 function printverbose(idx, size, path,start_time) {
 	elapsed=systime()-start_time
-	str=sprintf("\rcount=%d, class=%d, file=%s (%g/s)", idx, size, path, elapsed/idx)
-	printf(str"%*s", length(str)-oldlen, "") > "/dev/stderr"
+	str=sprintf("count=%d, class=%d, file=%s (%g/s)", idx, size, path, elapsed/idx)
+	printf("\r"str"%*s", length(str)-oldlen, "") > "/dev/stderr"
 	fflush()
 	oldlen=length(str)
 }
