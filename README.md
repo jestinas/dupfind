@@ -49,6 +49,8 @@ The command line options are as follows:
     	-s...Selection strategy: One of FIRST, SHORTESTPATH, LONGESTPATH
     	-U...Unsafe comparison, but faster operation (only md5sum message digest comparison)
 
+The other arguments passed to the command line are treated as directories to scan.
+
 ## Requirements
 
 Requires the following Linux binaries that are normally installed in every installation:
